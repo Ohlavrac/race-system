@@ -1,3 +1,5 @@
+One more race system for Fivem.
+# THIS PROJECT IS UNDER DEVELOPMENT
 # FiveM-TypeScript
 easy to use just type
 ## npm i 
