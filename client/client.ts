@@ -34,6 +34,16 @@ function getRightHeading(headingValue: number) {
 	}
 }
 
+function removeAllCheckpointsObj() {
+	for (let index = 0; index < race.checkpoint.length; index++) {
+		let getObjectLeft = GetClosestObjectOfType(race.checkpoint[index].coordLeft[0], race.checkpoint[index].coordLeft[1], race.checkpoint[index].coordLeft[2], 100.0, DEFAULT_CHECKPOINT_OBJECT, true, false, false);
+		let getObjectRight = GetClosestObjectOfType(race.checkpoint[index].coordRight[0], race.checkpoint[index].coordRight[1], race.checkpoint[index].coordRight[2], 100.0, DEFAULT_CHECKPOINT_OBJECT, true, false, false);
+		
+		DeleteObject(getObjectLeft);
+		DeleteObject(getObjectRight);
+	}
+}
+
 RegisterCommand("createrace", () => {
 	isCreateRaceEnable = true;
 }, false);
@@ -43,14 +53,13 @@ RegisterCommand("exitcreaterace", () => {
 }, false);
 
 RegisterCommand("saverace", () => {
-	//for (let index = 0; index < race.checkpoint.length; index++) {
-		//DeleteObject()
-	//}
-	let getObjectLeft = GetClosestObjectOfType(race.checkpoint[0].coordLeft[0], race.checkpoint[0].coordLeft[1], race.checkpoint[0].coordLeft[2], 100.0, DEFAULT_CHECKPOINT_OBJECT, true, false, false);
-	let getObjectRight = GetClosestObjectOfType(race.checkpoint[0].coordRight[0], race.checkpoint[0].coordRight[1], race.checkpoint[0].coordRight[2], 100.0, DEFAULT_CHECKPOINT_OBJECT, true, false, false);
 
-	DeleteObject(getObjectLeft);
-	DeleteObject(getObjectRight);
+	//REMOVE ALL CHECKPOINTS
+	if (race.checkpoint.length > 1) {
+		removeAllCheckpointsObj();
+	} 
+
+	isCreateRaceEnable = false
 }, false);
 
 setTick(async () => {
@@ -77,7 +86,7 @@ setTick(async () => {
 		let newYRight = y + DEFAULT_DISTANCE * Math.sin(angRightToRads-1.5);
 		let newZRight = z;
 
-		let checkpontLeft = CreateObjectNoOffset(
+		let checkpontLeft = CreateObject(
 			DEFAULT_CHECKPOINT_OBJECT,
 			newXLeft,
 			newYLeft,
@@ -87,7 +96,7 @@ setTick(async () => {
 			false,
 		);
 
-		let checkpointRight = CreateObjectNoOffset(
+		let checkpointRight = CreateObject(
 			DEFAULT_CHECKPOINT_OBJECT,
 			newXRight,
 			newYRight,
@@ -134,8 +143,19 @@ setTick(async () => {
 
 			console.log(getObjectLeft, getObjectRight);
 
-			DeleteObject(checkpontLeft);
-			DeleteObject(checkpointRight);
+			//DeleteObject(checkpontLeft);
+			//DeleteObject(checkpointRight);
+
+			//Set transparence ALPHA
+			SetEntityAlpha(checkpontLeft, 150, false);
+			SetEntityAlpha(checkpointRight, 150, false);
+
+			//Deixa os objetos posicionados sem colisao
+			SetEntityCollision(checkpontLeft, false, false);
+			SetEntityCollision(checkpointRight, false, false);
+
+			FreezeEntityPosition(checkpontLeft, true);
+			FreezeEntityPosition(checkpointRight, true);
 		}
 	}
 });
